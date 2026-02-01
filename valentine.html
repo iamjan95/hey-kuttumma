@@ -4,6 +4,17 @@
   <meta charset="UTF-8" />
   <title>Will You Be My Valentine? 💘</title>
   <style>
+
+#confetti {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 999;
+}
+
     body {
       height: 100vh;
       display: flex;
@@ -52,14 +63,146 @@
       color: #ff4d6d;
       display: none;
     }
+
+    #message {
+  margin-top: 25px;
+  text-align: center;
+  display: none;
+  animation: fadeInUp 1s ease forwards;
+}
+
+#message h2 {
+  color: #ff4d6d;
+  margin-bottom: 15px;
+}
+
+#usPhoto {
+  width: 220px;
+  border-radius: 18px;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.25);
+  opacity: 0;
+  transform: scale(0.9);
+  animation: photoPop 1s ease forwards;
+  animation-delay: 0.4s;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes photoPop {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
   </style>
 </head>
+<canvas id="confetti"></canvas>
+<script>
+    const canvas = document.getElementById("confetti");
+    const ctx = canvas.getContext("2d");
+  
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  
+    const pieces = [];
+    const colors = ["#ff4d6d", "#ff8fa3", "#ffd6e0", "#ffc2d1"];
+  
+    function random(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+  
+    function createFirework() {
+      for (let i = 0; i < 120; i++) {
+        pieces.push({
+          x: canvas.width / 2,
+          y: canvas.height / 2,
+          size: random(4, 7),
+          speedX: random(-6, 6),
+          speedY: random(-8, 2),
+          gravity: 0.15,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          life: 100
+        });
+      }
+    }
+  
+    function update() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+      pieces.forEach((p, i) => {
+        p.x += p.speedX;
+        p.y += p.speedY;
+        p.speedY += p.gravity;
+        p.life--;
+  
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+  
+        if (p.life <= 0) pieces.splice(i, 1);
+      });
+  
+      requestAnimationFrame(update);
+    }
+  
+    update();
+  
+    function celebrate() {
+      createFirework();
+      setTimeout(createFirework, 300);
+      setTimeout(createFirework, 600);
+    }
+
+    const meetDate = new Date("2026-02-14T10:00:00"); 
+
+  function updateCountdown() {
+    const now = new Date();
+    const diff = meetDate - now;
+
+    if (diff <= 0) {
+      document.getElementById("countdown").innerText =
+        "Finally together 💖";
+      return;
+    }
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const minutes = Math.floor((diff / (1000 * 60)) % 60);
+    const seconds = Math.floor((diff / 1000) % 60);
+
+    document.getElementById("countdown").innerText =
+      `${days}d ${hours}h ${minutes}m ${seconds}s`;
+  }
+
+  setInterval(updateCountdown, 1000);
+  updateCountdown();
+
+  </script>
+  
 <body>
   <div class="card">
     <h1>Will you be my Valentine? 💖</h1>
     <button id="yes">YES 💕</button>
     <button id="no">NO 😭</button>
-    <div id="message">YAY!! 💘💘💘</div>
+    <div id="message">
+        <h2>YAYYYY 💖 See you soon kuttumma</h2>
+        <img id="usPhoto" src="images/pic9.jpeg" alt="us">
+        <div id="timer">
+          <div id="countdown"></div>
+          <p>Until we meet again 🫶</p>
+        </div>
+      </div>
   </div>
 
   <script>
@@ -76,6 +219,7 @@
 
     yesBtn.addEventListener("click", () => {
       message.style.display = "block";
+      celebrate();
     });
   </script>
 </body>
